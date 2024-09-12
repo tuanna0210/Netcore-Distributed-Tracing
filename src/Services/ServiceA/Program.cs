@@ -1,3 +1,4 @@
+using OpenTelemetry.Trace;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -11,6 +12,14 @@ builder.Services.AddHttpClient("ServiceB", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7053");
 });
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracerProviderBuilder =>
+    {
+        tracerProviderBuilder
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddJaegerExporter();
+    });
 
 var app = builder.Build();
 

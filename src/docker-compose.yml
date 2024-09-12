@@ -1,0 +1,27 @@
+version: '3.4'
+
+services:
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    ports:
+      - "6831:6831/udp"   # For sending traces (UDP)
+      - "6832:6832/udp"   # For sending traces (UDP)
+      - "5775:5775/udp"   # For Zipkin span format (UDP)
+      - "6834:6834/udp"   # For Jager-agent and Collector comm (UDP)
+      - "14268:14268"     # Collector HTTP endpoint
+      - "14250:14250"     # gRPC for sending spans
+      - "14269:14269"     # Jaeger Collector Admin/Health endpoint
+      - "16686:16686"     # Jaeger UI
+      - "14270:14270"     # Jaeger Query
+      - "5778:5778"       # UI Configuration port
+
+    environment:
+      - COLLECTOR_ZIPKIN_HTTP_PORT=9411 # Enables Zipkin traces
+
+  servicea:
+    image: ${DOCKER_REGISTRY-}servicea
+    build:
+      context: .
+      dockerfile: Services/ServiceA/Dockerfile
